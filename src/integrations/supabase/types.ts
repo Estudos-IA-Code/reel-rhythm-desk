@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      movies: {
+        Row: {
+          ano: number | null
+          assistido: boolean
+          categorias: string[]
+          created_at: string
+          id: string
+          observacoes: string | null
+          poster_url: string | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ano?: number | null
+          assistido?: boolean
+          categorias?: string[]
+          created_at?: string
+          id?: string
+          observacoes?: string | null
+          poster_url?: string | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ano?: number | null
+          assistido?: boolean
+          categorias?: string[]
+          created_at?: string
+          id?: string
+          observacoes?: string | null
+          poster_url?: string | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
