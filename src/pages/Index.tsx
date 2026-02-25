@@ -8,101 +8,32 @@ import MovieEmptyState from "@/components/movies/MovieEmptyState";
 import MovieErrorState from "@/components/movies/MovieErrorState";
 import MovieSkeleton from "@/components/movies/MovieSkeleton";
 import MoviePagination from "@/components/movies/MoviePagination";
+import { useMovies } from "@/hooks/useMovies";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 import type { Movie } from "@/types/movie";
 
 const CATEGORIAS_DISPONIVEIS = [
-  "Ação",
-  "Aventura",
-  "Comédia",
-  "Drama",
-  "Ficção Científica",
-  "Terror",
-  "Romance",
-  "Animação",
-  "Documentário",
-  "Suspense",
+  "Ação", "Aventura", "Comédia", "Drama", "Ficção Científica",
+  "Terror", "Romance", "Animação", "Documentário", "Suspense",
 ];
 
 const ITEMS_PER_PAGE = 6;
 
-const MOCK_MOVIES: Movie[] = [
-  {
-    id: "1",
-    titulo: "Interestelar",
-    categorias: ["Ficção Científica", "Drama"],
-    ano: 2014,
-    posterUrl: "https://image.tmdb.org/t/p/w300/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    assistido: true,
-    observacoes: "Uma obra-prima de Christopher Nolan sobre viagens no tempo e amor.",
-  },
-  {
-    id: "2",
-    titulo: "Parasita",
-    categorias: ["Drama", "Suspense"],
-    ano: 2019,
-    posterUrl: "https://image.tmdb.org/t/p/w300/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    assistido: true,
-  },
-  {
-    id: "3",
-    titulo: "Duna: Parte Dois",
-    categorias: ["Ficção Científica", "Aventura"],
-    ano: 2024,
-    posterUrl: "https://image.tmdb.org/t/p/w300/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg",
-    assistido: false,
-    observacoes: "Continuação épica da saga de Paul Atreides.",
-  },
-  {
-    id: "4",
-    titulo: "Oppenheimer",
-    categorias: ["Drama"],
-    ano: 2023,
-    posterUrl: "https://image.tmdb.org/t/p/w300/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    assistido: false,
-  },
-  {
-    id: "5",
-    titulo: "Divertida Mente 2",
-    categorias: ["Animação", "Comédia"],
-    ano: 2024,
-    posterUrl: "https://image.tmdb.org/t/p/w300/xeqPJshYPVJx1bNuoMfOdBz5SQ1.jpg",
-    assistido: false,
-  },
-  {
-    id: "6",
-    titulo: "O Poderoso Chefão",
-    categorias: ["Drama"],
-    ano: 1972,
-    assistido: true,
-    observacoes: "Clássico absoluto do cinema.",
-  },
-  {
-    id: "7",
-    titulo: "Mad Max: Estrada da Fúria",
-    categorias: ["Ação", "Aventura"],
-    ano: 2015,
-    posterUrl: "https://image.tmdb.org/t/p/w300/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg",
-    assistido: false,
-  },
-];
-
 const Index = () => {
-  const [movies, setMovies] = useState<Movie[]>(MOCK_MOVIES);
+  const { signOut } = useAuth();
+  const { movies, isLoading, isError, refetch, createMovie, updateMovie, toggleAssistido, deleteMovie } = useMovies();
+
   const [busca, setBusca] = useState("");
   const [categoriasFiltro, setCategoriasFiltro] = useState<string[]>([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [isLoading] = useState(false);
-  const [isError] = useState(false);
 
-  // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
-
-  // Delete dialog state
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const movieToDelete = movies.find((m) => m.id === deleteId);
 
-  // Filtered movies
   const filteredMovies = useMemo(() => {
     let result = movies;
     if (busca.trim()) {
@@ -117,14 +48,12 @@ const Index = () => {
     return result;
   }, [movies, busca, categoriasFiltro]);
 
-  // Pagination
   const totalPaginas = Math.ceil(filteredMovies.length / ITEMS_PER_PAGE);
   const paginatedMovies = filteredMovies.slice(
     (paginaAtual - 1) * ITEMS_PER_PAGE,
     paginaAtual * ITEMS_PER_PAGE
   );
 
-  // Reset page on filter change
   const handleBuscaChange = useCallback((val: string) => {
     setBusca(val);
     setPaginaAtual(1);
@@ -136,61 +65,55 @@ const Index = () => {
   }, []);
 
   const handleToggleAssistido = useCallback((id: string, valor: boolean) => {
-    setMovies((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, assistido: valor } : m))
-    );
-  }, []);
+    toggleAssistido.mutate({ id, assistido: valor });
+  }, [toggleAssistido]);
 
   const handleAbrirCriar = useCallback(() => {
     setEditingMovie(null);
     setModalOpen(true);
   }, []);
 
-  const handleAbrirEditar = useCallback(
-    (id: string) => {
-      const movie = movies.find((m) => m.id === id);
-      if (movie) {
-        setEditingMovie(movie);
-        setModalOpen(true);
-      }
-    },
-    [movies]
-  );
+  const handleAbrirEditar = useCallback((id: string) => {
+    const movie = movies.find((m) => m.id === id);
+    if (movie) {
+      setEditingMovie(movie);
+      setModalOpen(true);
+    }
+  }, [movies]);
 
-  const handleSalvarFilme = useCallback(
-    (payload: Omit<Movie, "id" | "assistido">) => {
-      if (editingMovie) {
-        setMovies((prev) =>
-          prev.map((m) =>
-            m.id === editingMovie.id ? { ...m, ...payload } : m
-          )
-        );
-      } else {
-        const newMovie: Movie = {
-          ...payload,
-          id: crypto.randomUUID(),
-          assistido: false,
-        };
-        setMovies((prev) => [newMovie, ...prev]);
-      }
-      setModalOpen(false);
-      setEditingMovie(null);
-    },
-    [editingMovie]
-  );
+  const handleSalvarFilme = useCallback((payload: Omit<Movie, "id" | "assistido">) => {
+    if (editingMovie) {
+      updateMovie.mutate({ id: editingMovie.id, ...payload });
+    } else {
+      createMovie.mutate(payload);
+    }
+    setModalOpen(false);
+    setEditingMovie(null);
+  }, [editingMovie, updateMovie, createMovie]);
 
   const handleConfirmarExcluir = useCallback(() => {
     if (deleteId) {
-      setMovies((prev) => prev.filter((m) => m.id !== deleteId));
+      deleteMovie.mutate(deleteId);
       setDeleteId(null);
     }
-  }, [deleteId]);
+  }, [deleteId, deleteMovie]);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          <MovieHeader onAbrirCriar={handleAbrirCriar} />
+          <div className="flex items-center justify-between gap-2">
+            <MovieHeader onAbrirCriar={handleAbrirCriar} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={signOut}
+              className="text-muted-foreground hover:text-foreground flex-shrink-0"
+              title="Sair"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
 
           <MovieFilters
             busca={busca}
@@ -203,7 +126,7 @@ const Index = () => {
           {isLoading ? (
             <MovieSkeleton />
           ) : isError ? (
-            <MovieErrorState onRetry={() => window.location.reload()} />
+            <MovieErrorState onRetry={() => refetch()} />
           ) : paginatedMovies.length === 0 ? (
             <MovieEmptyState onAbrirCriar={handleAbrirCriar} />
           ) : (
@@ -231,10 +154,7 @@ const Index = () => {
 
       <MovieModal
         open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setEditingMovie(null);
-        }}
+        onClose={() => { setModalOpen(false); setEditingMovie(null); }}
         onSalvar={handleSalvarFilme}
         movie={editingMovie}
         categoriasDisponiveis={CATEGORIAS_DISPONIVEIS}
