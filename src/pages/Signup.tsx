@@ -48,7 +48,6 @@ const Signup = () => {
       password,
       options: {
         data: { name: name.trim() },
-        emailRedirectTo: window.location.origin,
       },
     });
 
