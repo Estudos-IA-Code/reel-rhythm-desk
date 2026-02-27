@@ -17,34 +17,34 @@ const MovieCard = ({
   index,
   onToggleAssistido,
   onAbrirEditar,
-  onSolicitarExcluir,
+  onSolicitarExcluir
 }: MovieCardProps) => {
   return (
     <div
       className="group relative flex gap-4 rounded-lg border border-border bg-card p-4 shadow-card transition-all duration-300 hover:border-primary/30 hover:shadow-glow animate-fade-in"
-      style={{ animationDelay: `${index * 60}ms` }}
-    >
+      style={{ animationDelay: `${index * 60}ms` }}>
+
       {/* Poster */}
       <div className="relative h-36 w-24 flex-shrink-0 overflow-hidden rounded-md bg-muted">
-        {movie.posterUrl ? (
-          <img
-            src={movie.posterUrl}
-            alt={movie.titulo}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+        {movie.posterUrl ?
+        <img
+          src={movie.posterUrl}
+          alt={movie.titulo}
+          className="h-full w-full object-cover"
+          loading="lazy" /> :
+
+
+        <div className="flex h-full w-full items-center justify-center text-muted-foreground">
             <Eye className="h-8 w-8 opacity-30" />
           </div>
-        )}
-        {movie.assistido && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/60">
+        }
+        {movie.assistido &&
+        <div className="absolute inset-0 flex items-center justify-center bg-background/60">
             <div className="rounded-full gradient-gold p-1.5">
               <Eye className="h-4 w-4 text-primary-foreground" />
             </div>
           </div>
-        )}
+        }
       </div>
 
       {/* Info */}
@@ -54,30 +54,30 @@ const MovieCard = ({
             <h3 className="font-body text-lg font-semibold text-foreground truncate">
               {movie.titulo}
             </h3>
-            {movie.ano && (
-              <span className="flex-shrink-0 text-sm text-muted-foreground">
+            {movie.ano &&
+            <span className="flex-shrink-0 text-sm text-muted-foreground">
                 {movie.ano}
               </span>
-            )}
+            }
           </div>
 
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {movie.categorias.map((cat) => (
-              <Badge
-                key={cat}
-                variant="secondary"
-                className="text-xs bg-secondary text-secondary-foreground border-0"
-              >
+            {movie.categorias.map((cat) =>
+            <Badge
+              key={cat}
+              variant="secondary"
+              className="text-xs bg-secondary text-secondary-foreground border-0">
+
                 {cat}
               </Badge>
-            ))}
+            )}
           </div>
 
-          {movie.observacoes && (
-            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+          {movie.observacoes &&
+          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
               {movie.observacoes}
             </p>
-          )}
+          }
         </div>
 
         {/* Actions */}
@@ -86,20 +86,20 @@ const MovieCard = ({
             <Switch
               checked={movie.assistido}
               onCheckedChange={(checked) =>
-                onToggleAssistido(movie.id, checked)
+              onToggleAssistido(movie.id, checked)
               }
-              className="data-[state=checked]:bg-primary"
-            />
+              className="data-[state=checked]:bg-primary" />
+
             <span className="text-sm text-muted-foreground flex items-center gap-1">
-              {movie.assistido ? (
-                <>
+              {movie.assistido ?
+              <>
                   <Eye className="h-3.5 w-3.5 text-primary" /> Assistido
-                </>
-              ) : (
-                <>
+                </> :
+
+              <>
                   <EyeOff className="h-3.5 w-3.5" /> Não assistido
                 </>
-              )}
+              }
             </span>
           </label>
 
@@ -108,23 +108,23 @@ const MovieCard = ({
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-              onClick={() => onAbrirEditar(movie.id)}
-            >
+              onClick={() => onAbrirEditar(movie.id)}>
+
               <Pencil className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              onClick={() => onSolicitarExcluir(movie.id)}
-            >
+              onClick={() => onSolicitarExcluir(movie.id)}>
+
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default MovieCard;
