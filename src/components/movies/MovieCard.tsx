@@ -50,7 +50,7 @@ const MovieCard = ({
       {/* Info */}
       <div className="flex flex-1 flex-col justify-between min-w-0">
         <div>
-          <div className="flex items-start justify-between gap-2 bg-primary">
+          <div className="flex items-start justify-between gap-2 bg-[#f9b11f]/0">
             <h3 className="font-body text-lg font-semibold text-foreground truncate">
               {movie.titulo}
             </h3>

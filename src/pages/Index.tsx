@@ -15,9 +15,9 @@ import { LogOut } from "lucide-react";
 import type { Movie } from "@/types/movie";
 
 const CATEGORIAS_DISPONIVEIS = [
-  "Ação", "Aventura", "Comédia", "Drama", "Ficção Científica",
-  "Terror", "Romance", "Animação", "Documentário", "Suspense",
-];
+"Ação", "Aventura", "Comédia", "Drama", "Ficção Científica",
+"Terror", "Romance", "Animação", "Documentário", "Suspense"];
+
 
 const ITEMS_PER_PAGE = 6;
 
@@ -42,7 +42,7 @@ const Index = () => {
     }
     if (categoriasFiltro.length > 0) {
       result = result.filter((m) =>
-        categoriasFiltro.some((c) => m.categorias.includes(c))
+      categoriasFiltro.some((c) => m.categorias.includes(c))
       );
     }
     return result;
@@ -99,7 +99,7 @@ const Index = () => {
   }, [deleteId, deleteMovie]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#5f6f86]/0">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-2">
@@ -109,8 +109,8 @@ const Index = () => {
               size="icon"
               onClick={signOut}
               className="text-muted-foreground hover:text-foreground flex-shrink-0"
-              title="Sair"
-            >
+              title="Sair">
+
               <LogOut className="h-5 w-5" />
             </Button>
           </div>
@@ -120,54 +120,54 @@ const Index = () => {
             categoriasSelecionadas={categoriasFiltro}
             categoriasDisponiveis={CATEGORIAS_DISPONIVEIS}
             onBuscarChange={handleBuscaChange}
-            onCategoriasChange={handleCategoriasChange}
-          />
+            onCategoriasChange={handleCategoriasChange} />
 
-          {isLoading ? (
-            <MovieSkeleton />
-          ) : isError ? (
-            <MovieErrorState onRetry={() => refetch()} />
-          ) : paginatedMovies.length === 0 ? (
-            <MovieEmptyState onAbrirCriar={handleAbrirCriar} />
-          ) : (
-            <div className="space-y-3">
-              {paginatedMovies.map((movie, i) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  index={i}
-                  onToggleAssistido={handleToggleAssistido}
-                  onAbrirEditar={handleAbrirEditar}
-                  onSolicitarExcluir={setDeleteId}
-                />
-              ))}
+
+          {isLoading ?
+          <MovieSkeleton /> :
+          isError ?
+          <MovieErrorState onRetry={() => refetch()} /> :
+          paginatedMovies.length === 0 ?
+          <MovieEmptyState onAbrirCriar={handleAbrirCriar} /> :
+
+          <div className="space-y-3">
+              {paginatedMovies.map((movie, i) =>
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              index={i}
+              onToggleAssistido={handleToggleAssistido}
+              onAbrirEditar={handleAbrirEditar}
+              onSolicitarExcluir={setDeleteId} />
+
+            )}
             </div>
-          )}
+          }
 
           <MoviePagination
             paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}
-            onPaginar={setPaginaAtual}
-          />
+            onPaginar={setPaginaAtual} />
+
         </div>
       </div>
 
       <MovieModal
         open={modalOpen}
-        onClose={() => { setModalOpen(false); setEditingMovie(null); }}
+        onClose={() => {setModalOpen(false);setEditingMovie(null);}}
         onSalvar={handleSalvarFilme}
         movie={editingMovie}
-        categoriasDisponiveis={CATEGORIAS_DISPONIVEIS}
-      />
+        categoriasDisponiveis={CATEGORIAS_DISPONIVEIS} />
+
 
       <DeleteConfirmDialog
         open={!!deleteId}
         movieTitle={movieToDelete?.titulo ?? ""}
         onCancel={() => setDeleteId(null)}
-        onConfirm={handleConfirmarExcluir}
-      />
-    </div>
-  );
+        onConfirm={handleConfirmarExcluir} />
+
+    </div>);
+
 };
 
 export default Index;
