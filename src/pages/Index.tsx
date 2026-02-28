@@ -9,9 +9,6 @@ import MovieErrorState from "@/components/movies/MovieErrorState";
 import MovieSkeleton from "@/components/movies/MovieSkeleton";
 import MoviePagination from "@/components/movies/MoviePagination";
 import { useMovies } from "@/hooks/useMovies";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import type { Movie } from "@/types/movie";
 
 const CATEGORIAS_DISPONIVEIS = [
@@ -22,7 +19,6 @@ const CATEGORIAS_DISPONIVEIS = [
 const ITEMS_PER_PAGE = 6;
 
 const Index = () => {
-  const { signOut } = useAuth();
   const { movies, isLoading, isError, refetch, createMovie, updateMovie, toggleAssistido, deleteMovie } = useMovies();
 
   const [busca, setBusca] = useState("");
@@ -102,18 +98,7 @@ const Index = () => {
     <div className="min-h-screen bg-[#5f6f86]/0">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          <div className="flex items-center justify-between gap-2">
-            <MovieHeader onAbrirCriar={handleAbrirCriar} />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={signOut}
-              className="text-muted-foreground hover:text-foreground flex-shrink-0"
-              title="Sair">
-
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
+          <MovieHeader onAbrirCriar={handleAbrirCriar} />
 
           <MovieFilters
             busca={busca}
