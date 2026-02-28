@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Film, Star, Calendar, Eye, EyeOff, ArrowLeft, ExternalLink } from "lucide-react";
+import { Film, Star, Calendar, Eye, EyeOff, ArrowLeft, ExternalLink, List, LogOut } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const TMDB_TOKEN =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1M2ExZWY0NDgzN2U4ODRlOTM0ZTA1NTE0NjYwM2U0MCIsIm5iZiI6MTc3MjIzMjEzNC4xODIwMDAyLCJzdWIiOiI2OWEyMWRjNmRlYWI5NjIwMDdjMTZjMzQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.IAaD6Eo767ZLWD4iEFIzxr1tNTpQG3ETgt6nEu1W6jE";
@@ -182,6 +183,7 @@ const PopularSkeleton = () => (
 const Popular = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["popular-movies", page],
@@ -195,20 +197,31 @@ const Popular = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/")}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div className="h-10 w-10 rounded-lg gradient-gold items-center justify-center flex">
                 <Star className="h-5 w-5 text-primary-foreground" />
               </div>
               <h1 className="text-4xl tracking-wider text-foreground">
                 POPULARES
               </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/watchlist")}
+                className="gap-2 border-border text-foreground hover:bg-muted font-body"
+              >
+                <List className="h-4 w-4" />
+                Watchlist
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={signOut}
+                className="text-muted-foreground hover:text-foreground"
+                title="Sair"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
             </div>
           </div>
 

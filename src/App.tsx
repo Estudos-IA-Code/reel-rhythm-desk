@@ -22,8 +22,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/popular" element={<ProtectedRoute><Popular /></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><Popular /></ProtectedRoute>} />
+            <Route path="/watchlist" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/movie/:id" element={<ProtectedRoute><MovieDetails /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
