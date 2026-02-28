@@ -55,7 +55,7 @@ const Login = () => {
           </div>
           <CardTitle className="text-3xl text-foreground">Entrar</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Acesse seus top filmes
+            Acesse seus top filmes 2
           </CardDescription>
         </CardHeader>
 
