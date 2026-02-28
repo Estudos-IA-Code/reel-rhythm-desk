@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Film, Star, Calendar, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Film, Star, Calendar, Eye, EyeOff, ArrowLeft, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,6 +71,7 @@ const PopularMovieCard = ({
   movie: TmdbMovie;
   index: number;
 }) => {
+  const navigate = useNavigate();
   const genres = movie.genre_ids
     .slice(0, 3)
     .map((id) => GENRE_MAP[id])
@@ -131,13 +132,24 @@ const PopularMovieCard = ({
           )}
         </div>
 
-        {/* Rating */}
-        <div className="mt-3 flex items-center gap-2">
-          <Star className="h-4 w-4 text-primary fill-primary" />
-          <span className="text-sm font-semibold text-foreground">
-            {movie.vote_average.toFixed(1)}
-          </span>
-          <span className="text-sm text-muted-foreground">/ 10</span>
+        {/* Rating + Details */}
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-primary fill-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              {movie.vote_average.toFixed(1)}
+            </span>
+            <span className="text-sm text-muted-foreground">/ 10</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/movie/${movie.id}`)}
+            className="text-primary hover:text-primary/80 hover:bg-primary/10 gap-1.5"
+          >
+            Ver detalhes
+            <ExternalLink className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </div>
     </div>
