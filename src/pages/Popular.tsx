@@ -7,9 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
-const TMDB_TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1M2ExZWY0NDgzN2U4ODRlOTM0ZTA1NTE0NjYwM2U0MCIsIm5iZiI6MTc3MjIzMjEzNC4xODIwMDAyLCJzdWIiOiI2OWEyMWRjNmRlYWI5NjIwMDdjMTZjMzQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.IAaD6Eo767ZLWD4iEFIzxr1tNTpQG3ETgt6nEu1W6jE";
-
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300";
 
 interface TmdbMovie {
@@ -53,13 +50,8 @@ const GENRE_MAP: Record<number, string> = {
 
 const fetchPopularMovies = async (page: number): Promise<TmdbResponse> => {
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/popular?language=pt-BR&page=${page}`,
-    {
-      headers: {
-        Authorization: `Bearer ${TMDB_TOKEN}`,
-        Accept: "application/json",
-      },
-    }
+    `https://api2.edsongrifo.dev.br/webhook/tmdb?page=${page}`,
+    { method: "POST" }
   );
   if (!res.ok) throw new Error("Falha ao buscar filmes populares");
   return res.json();
