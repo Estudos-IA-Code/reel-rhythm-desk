@@ -1,9 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Star, Calendar, Clock, Globe, Film } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Star, Calendar, Clock, Globe, Film, Plus, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const TMDB_TOKEN =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1M2ExZWY0NDgzN2U4ODRlOTM0ZTA1NTE0NjYwM2U0MCIsIm5iZiI6MTc3MjIzMjEzNC4xODIwMDAyLCJzdWIiOiI2OWEyMWRjNmRlYWI5NjIwMDdjMTZjMzQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.IAaD6Eo767ZLWD4iEFIzxr1tNTpQG3ETgt6nEu1W6jE";
@@ -96,6 +99,8 @@ const DetailsSkeleton = () => (
 const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: movie, isLoading, isError } = useQuery({
     queryKey: ["movie-details", id],
@@ -107,6 +112,50 @@ const MovieDetails = () => {
     queryKey: ["movie-credits", id],
     queryFn: () => fetchMovieCredits(id!),
     enabled: !!id,
+  });
+
+  // Check if movie is already in watchlist
+  const { data: isInWatchlist } = useQuery({
+    queryKey: ["watchlist-check", id],
+    queryFn: async () => {
+      if (!movie) return false;
+      const { data } = await supabase
+        .from("movies")
+        .select("id")
+        .eq("titulo", movie.title)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user && !!movie,
+  });
+
+  const addToWatchlist = useMutation({
+    mutationFn: async () => {
+      if (!movie || !user) throw new Error("Dados indisponíveis");
+      const year = movie.release_date ? parseInt(movie.release_date.split("-")[0]) : null;
+      const genres = movie.genres.map((g) => g.name);
+      const posterUrl = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+        : null;
+
+      const { error } = await supabase.from("movies").insert({
+        user_id: user.id,
+        titulo: movie.title,
+        categorias: genres,
+        ano: year,
+        poster_url: posterUrl,
+        observacoes: movie.overview || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Filme adicionado à watchlist!");
+      queryClient.invalidateQueries({ queryKey: ["watchlist-check", id] });
+      queryClient.invalidateQueries({ queryKey: ["movies"] });
+    },
+    onError: () => {
+      toast.error("Erro ao adicionar filme.");
+    },
   });
 
   const cast = credits?.cast.slice(0, 12) ?? [];
@@ -178,6 +227,22 @@ const MovieDetails = () => {
                     <p className="mt-1 text-muted-foreground italic">"{movie.tagline}"</p>
                   )}
                 </div>
+
+                <Button
+                  onClick={() => addToWatchlist.mutate()}
+                  disabled={isInWatchlist || addToWatchlist.isPending}
+                  className="w-fit gap-2"
+                  variant={isInWatchlist ? "secondary" : "default"}
+                >
+                  {addToWatchlist.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isInWatchlist ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Plus className="h-4 w-4" />
+                  )}
+                  {isInWatchlist ? "Na watchlist" : "Adicionar à watchlist"}
+                </Button>
 
                 {/* Meta row */}
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
