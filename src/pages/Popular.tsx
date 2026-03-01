@@ -51,9 +51,7 @@ const GENRE_MAP: Record<number, string> = {
 const fetchPopularMovies = async (page: number): Promise<TmdbResponse> => {
   const res = await fetch(
     `https://api2.edsongrifo.dev.br/webhook/tmdb?page=${page}`,
-    {
-      method: "POST",
-    }
+    { method: "POST" }
   );
   if (!res.ok) throw new Error("Falha ao buscar filmes populares");
   return res.json();
@@ -177,7 +175,7 @@ const PopularSkeleton = () => (
 const Popular = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { signOut, session } = useAuth();
+  const { signOut } = useAuth();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["popular-movies", page],
