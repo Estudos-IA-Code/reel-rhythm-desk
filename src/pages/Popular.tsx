@@ -48,14 +48,11 @@ const GENRE_MAP: Record<number, string> = {
   37: "Faroeste",
 };
 
-const fetchPopularMovies = async (page: number, accessToken: string): Promise<TmdbResponse> => {
+const fetchPopularMovies = async (page: number): Promise<TmdbResponse> => {
   const res = await fetch(
     `https://api2.edsongrifo.dev.br/webhook/tmdb?page=${page}`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     }
   );
   if (!res.ok) throw new Error("Falha ao buscar filmes populares");
@@ -184,8 +181,7 @@ const Popular = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["popular-movies", page],
-    queryFn: () => fetchPopularMovies(page, session?.access_token ?? ""),
-    enabled: !!session?.access_token,
+    queryFn: () => fetchPopularMovies(page),
   });
 
   return (
